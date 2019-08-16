@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using TodoApp.Api.Infrastructure;
 
 namespace TodoApp.Api.Controllers
@@ -11,6 +12,7 @@ namespace TodoApp.Api.Controllers
         [AllowAnonymous, HttpGet, Route("~/v1/health-check")]
         public ActionResult Get()
         {
+            Log.Information("Logger test...");
             return Ok();
         }
 

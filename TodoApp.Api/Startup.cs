@@ -118,7 +118,7 @@ namespace TodoApp.Api
             });
             app.UseStaticFiles();
             //app.UseAuthentication();
-            app.UseMiddleware(typeof(ErrorHandlerMiddleware));
+            app.UseMiddleware(typeof(RequestLoggerMiddleware));
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Todo API V1"); });
 
