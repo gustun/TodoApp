@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ILogger = Serilog.ILogger;
-using TodoApp.Api.ViewModels.Base;
 using TodoApp.Common.Models.Base;
 using TodoApp.Common.Enums;
 using System.Net;
@@ -58,7 +57,7 @@ namespace TodoApp.Api.Infrastructure.Middleware
             LogForErrorContext(httpContext)
                 .Error(ex, ErrorMessageTemplate, httpContext.Request.Method, httpContext.Request.Path, 500, sw.Elapsed.TotalMilliseconds, errorGuid);
 
-            var exceptionResponse = new ErrorResponse
+            var exceptionResponse = new ErrorResult
             {
                 ErrorTraceId = errorGuid.ToString(),
                 Messages = new List<Notification>

@@ -34,10 +34,10 @@ namespace TodoApp.DataAccess.Repositories
         {
             var result = new Result();
             if (_userList.Any(x => x.Email == newUser.Email))
-                return result.AddError("User already exists!");
+                return result.AddError("This email is already being used by another user.");
 
-            newUser.Password = _cryptoHelper.Hash(newUser.Password);
             _userList.Add(newUser);
+            result.Data = newUser;
             return result;
         }
 

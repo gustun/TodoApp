@@ -76,6 +76,7 @@ namespace TodoApp.Api.Infrastructure.Extensions
             });
 
             services.AddSwaggerExamplesFromAssemblyOf<LoginRequestExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<NewUserRequestExample>(); 
         }
 
         private const string Secretkey = "SECRETKEYGREATERTHAN128BITS";

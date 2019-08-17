@@ -9,7 +9,7 @@ namespace TodoApp.Api.Infrastructure.Filters
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
             if (actionContext.ModelState.IsValid) return;
-            var result = new Result();
+            var result = new BaseResult();
 
             foreach (var key in actionContext.ModelState.Keys)
             {

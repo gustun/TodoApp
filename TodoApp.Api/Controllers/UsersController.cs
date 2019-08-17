@@ -8,7 +8,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TodoApp.Api.Infrastructure;
 using TodoApp.Api.Infrastructure.Options;
-using TodoApp.Api.ViewModels.Base;
 using TodoApp.Api.ViewModels.Requests;
 using TodoApp.Common.Interface;
 using TodoApp.DataAccess.Entities;
@@ -45,7 +44,7 @@ namespace TodoApp.Api.Controllers
         [AllowAnonymous, HttpPost, Route("login")]
         public IActionResult Login(LoginRequest loginRequest)
         {
-            var toReturn = new BaseResponse();
+            var toReturn = new Result();
             var user = _userRepository.GetByMail(loginRequest.Email);
             if (user == null)
                 return NotFound(toReturn.AddError("User not found."));

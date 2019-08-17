@@ -37,10 +37,12 @@ namespace TodoApp.DataAccess.Repositories
 
         public Result Register(User newUser)
         {
-            Create(newUser);
+            var result = new Result();
+            if (GetByMail(newUser.Email) != null)
+                return result.AddError("This email is already being used by another user.");
 
-            //todo: move base response to common
-            return new Result();
+            result.Data = Create(newUser);
+            return result;
         }
     }
 }
