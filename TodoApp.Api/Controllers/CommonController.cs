@@ -1,14 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TodoApp.Api.Infrastructure;
+using TodoApp.Api.ViewModels.Responses;
+using TodoApp.DataAccess.Interface;
 
 namespace TodoApp.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : BaseApiController
+    public class CommonController : BaseApiController
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        public CommonController(IUserRepository userRepository, IMapper mapper)
+        {
+            _userRepository = userRepository;
+            _mapper = mapper;
+        }
+
         [AllowAnonymous, HttpGet, Route("~/v1/health-check")]
         public ActionResult Get()
         {
@@ -19,8 +29,12 @@ namespace TodoApp.Api.Controllers
         [HttpGet, Route("~/v1/me")]
         public IActionResult GetUserFromToken()
         {
-            //todo: ...
-            return NoContent();
+            var userId = GetUserId();
+            var user = _userRepository.GetById(userId);
+            if (user == null)
+                return NotFound();
+
+            return Ok(_mapper.Map<UserViewModel>(user));
         }
     }
 }

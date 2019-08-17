@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TodoApp.Api.Infrastructure.Swagger;
 
 namespace TodoApp.Api.Infrastructure.Extensions
 {
@@ -53,10 +54,10 @@ namespace TodoApp.Api.Infrastructure.Extensions
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 if (File.Exists(xmlPath))
                     c.IncludeXmlComments(xmlPath);
-                //c.ExampleFilters();
+                c.ExampleFilters();
             });
 
-            //services.AddSwaggerExamplesFromAssemblyOf<LoginViewModelExample>();
+            services.AddSwaggerExamplesFromAssemblyOf<LoginRequestExample>();
         }
 
         public static void ConfigureCors(this IServiceCollection services)

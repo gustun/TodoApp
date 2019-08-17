@@ -1,4 +1,5 @@
-﻿using TodoApp.Common.Models.Base;
+﻿using System;
+using TodoApp.Common.Models.Base;
 
 namespace TodoApp.Api.ViewModels.Base
 {
@@ -10,5 +11,10 @@ namespace TodoApp.Api.ViewModels.Base
     public class BaseResponse : Result
     {
         public object Data { get; set; }
+
+        internal object AddError(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
