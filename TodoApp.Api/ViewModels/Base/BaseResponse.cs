@@ -11,10 +11,5 @@ namespace TodoApp.Api.ViewModels.Base
     public class BaseResponse : Result
     {
         public object Data { get; set; }
-
-        internal object AddError(string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -13,6 +13,7 @@ using TodoApp.Api.ViewModels.Requests;
 using TodoApp.Common.Interface;
 using TodoApp.DataAccess.Entities;
 using TodoApp.DataAccess.Interface;
+using TodoApp.Common.Models.Base;
 
 namespace TodoApp.Api.Controllers
 {

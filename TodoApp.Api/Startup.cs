@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -8,20 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Text;
-using TodoApp.Api.Infrastructure;
 using TodoApp.Api.Infrastructure.Extensions;
 using TodoApp.Api.Infrastructure.Filters;
 using TodoApp.Api.Infrastructure.Middleware;
-using TodoApp.Api.Infrastructure.Options;
 using TodoApp.Common;
 using TodoApp.Common.Interface;
 using TodoApp.DataAccess.Interface;
 using TodoApp.DataAccess.Repositories;
+using Couchbase.Extensions.DependencyInjection;
 
 namespace TodoApp.Api
 {
@@ -33,9 +27,6 @@ namespace TodoApp.Api
         }
 
         public IConfiguration Configuration { get; }
-        private const string Secretkey = "SECRETKEYGREATERTHAN128BITS";
-        private const string Policyname = "ApiPolicy";
-        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secretkey));
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -44,31 +35,23 @@ namespace TodoApp.Api
             services.ConfigureSwagger();
             services.AddOptions();
             services.AddSingleton<ICryptoHelper, CryptoHelper>();
-            services.AddSingleton(provider => new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile(provider.GetRequiredService<ICryptoHelper>()));
-            }).CreateMapper());
-            services.AddScoped<IUserRepository, FakeUserRepository>();
+            services.ConfigureJwtAuthentication(Configuration);
+            services.ConfigureAutoMapper();
+            services.AddCouchbase(Configuration.GetSection("Couchbase"))
+                .AddCouchbaseBucket<ITodoBucketProvider>("todoApp");
+            services.AddScoped<IUserRepository, UserRepository>();
 
-            var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
-            services.Configure<JwtIssuerOptions>(options =>
-            {
-                options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
-                options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
-                options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
-            });
 
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
-
-
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            var jsonOptions = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 Formatting = Formatting.Indented,
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
+            JsonConvert.DefaultSettings = () => jsonOptions;
 
-            services.AddMvc(config => 
+            services.AddMvc(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
                             .RequireAuthenticatedUser()
@@ -77,48 +60,19 @@ namespace TodoApp.Api
                 config.Filters.Add(typeof(ValidateModelStateAttribute));
             }).AddJsonOptions(opt =>
             {
-                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                opt.SerializerSettings.Formatting = Formatting.Indented;
+                opt.SerializerSettings.ReferenceLoopHandling = jsonOptions.ReferenceLoopHandling;
+                opt.SerializerSettings.ContractResolver = jsonOptions.ContractResolver;
+                opt.SerializerSettings.Formatting = jsonOptions.Formatting;
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            services.AddAuthorization(options => { options.DefaultPolicy = options.GetPolicy(Policyname); });
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
-
-                ValidateAudience = true,
-                ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = _signingKey,
-
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-
-                ClockSkew = TimeSpan.Zero
-            };
-
-            services.AddAuthentication(o =>
-            {
-                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o => o.TokenValidationParameters = tokenValidationParameters);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
                 app.UseExceptionHandler();
-            }
 
             app.UseCors("CorsPolicy");
             app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -130,8 +84,12 @@ namespace TodoApp.Api
             app.UseMiddleware(typeof(RequestLoggerMiddleware));
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Todo API V1"); });
-
             app.UseMvc();
+
+            applicationLifetime.ApplicationStopped.Register(() =>
+            {
+                app.ApplicationServices.GetRequiredService<ICouchbaseLifetimeService>().Close();
+            });
         }
     }
 }

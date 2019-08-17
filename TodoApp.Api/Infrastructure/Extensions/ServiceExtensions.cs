@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Couchbase;
+using Couchbase.Authentication;
+using Couchbase.Configuration.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.Swagger;
@@ -8,6 +13,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using TodoApp.Api.Infrastructure.Swagger;
+using TodoApp.Common.Interface;
+using Microsoft.Extensions.Configuration;
+using TodoApp.Api.Infrastructure.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace TodoApp.Api.Infrastructure.Extensions
 {
@@ -19,6 +29,14 @@ namespace TodoApp.Api.Infrastructure.Extensions
             {
 
             });
+        }
+
+        public static void ConfigureAutoMapper(this IServiceCollection services)
+        {
+            services.AddSingleton(provider => new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile(provider.GetRequiredService<ICryptoHelper>()));
+            }).CreateMapper());
         }
 
         public static void ConfigureSwagger(this IServiceCollection services)
@@ -58,6 +76,44 @@ namespace TodoApp.Api.Infrastructure.Extensions
             });
 
             services.AddSwaggerExamplesFromAssemblyOf<LoginRequestExample>();
+        }
+
+        private const string Secretkey = "SECRETKEYGREATERTHAN128BITS";
+        private const string Policyname = "ApiPolicy";
+        public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secretkey));
+
+            services.AddAuthorization(options => { options.DefaultPolicy = options.GetPolicy(Policyname); });
+            var jwtAppSettingOptions = configuration.GetSection(nameof(JwtIssuerOptions));
+            services.Configure<JwtIssuerOptions>(options =>
+            {
+                options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+                options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+                options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            });
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
+
+                ValidateAudience = true,
+                ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
+
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signingKey,
+
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
+
+                ClockSkew = TimeSpan.Zero
+            };
+
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o => o.TokenValidationParameters = tokenValidationParameters);
         }
 
         public static void ConfigureCors(this IServiceCollection services)
