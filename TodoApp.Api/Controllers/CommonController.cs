@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TodoApp.Api.Infrastructure;
 using TodoApp.Api.ViewModels.Responses;
+using TodoApp.Common.Models.Base;
 using TodoApp.DataAccess.Interface;
 
 namespace TodoApp.Api.Controllers
@@ -34,7 +35,7 @@ namespace TodoApp.Api.Controllers
             if (user == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<UserViewModel>(user));
+            return Ok(new Result(_mapper.Map<UserViewModel>(user)));
         }
     }
 }
