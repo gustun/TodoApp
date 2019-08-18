@@ -25,13 +25,13 @@ namespace TodoApp.DataAccess.Entities.Base
             return result.Value;
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(int limit = 10)
         {
             var query = new QueryRequest(
                 $@"SELECT t.* 
                 FROM {_bucket.Name} as t 
                 WHERE type = '{Type}' 
-                LIMIT 10;");
+                LIMIT {limit};");
 
             var result = _bucket.Query<T>(query);
             if (!result.Success)

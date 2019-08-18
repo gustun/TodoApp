@@ -13,6 +13,7 @@ using TodoApp.Common.Interface;
 using TodoApp.DataAccess.Entities;
 using TodoApp.DataAccess.Interface;
 using TodoApp.Common.Models.Base;
+using TodoApp.Api.ViewModels;
 
 namespace TodoApp.Api.Controllers
 {
@@ -81,9 +82,12 @@ namespace TodoApp.Api.Controllers
         [AllowAnonymous, HttpPost, Route("register")]
         public IActionResult Register(NewUserRequest newUser)
         {
-            var result = _userRepository.Register(_mapper.Map<User>(newUser));
-            if (result.IsSuccess) return Ok(result);
-            return BadRequest(result);
+            var result = _userRepository.Save(_mapper.Map<User>(newUser));
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            result.Data = _mapper.Map<UserViewModel>(result.Data);
+            return Ok(result);
         }
     }
 }

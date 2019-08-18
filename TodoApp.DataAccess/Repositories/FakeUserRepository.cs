@@ -30,7 +30,7 @@ namespace TodoApp.DataAccess.Repositories
                 };
         }
 
-        public Result Register(User newUser)
+        public Result Save(User newUser)
         {
             var result = new Result();
             if (_userList.Any(x => x.Email == newUser.Email))
@@ -49,6 +49,36 @@ namespace TodoApp.DataAccess.Repositories
         public User GetByMail(string mailAddress)
         {
             return _userList.FirstOrDefault(x => x.Email == mailAddress);
+        }
+
+        public Result SaveProject(Guid userId, Project newProject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseResult UpdateProject(Guid userId, Project project)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseResult DeleteProject(Guid userId, Guid projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Result SaveTask(Guid userId, Guid projectId, ProjectTask newTask)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseResult UpdateTask(Guid userId, Guid projectId, ProjectTask task)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BaseResult DeleteTask(Guid userId, Guid projectId, Guid taskId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

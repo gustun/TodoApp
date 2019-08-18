@@ -21,7 +21,7 @@ namespace TodoApp.Common.Models.Base
 
     public static class ResultExtensions
     {
-        public static T AddSuccess<T>(this T result, string message = "Successfully completed the process!") where T : BaseResult
+        public static T AddSuccess<T>(this T result, string message = "İşlem başarı ile tamamlandı.") where T : BaseResult
         {
             if (result == null) return default(T);
             result.AddNotification(message, ENotificationType.Success);

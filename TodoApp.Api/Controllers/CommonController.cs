@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TodoApp.Api.Infrastructure;
-using TodoApp.Api.ViewModels.Responses;
+using TodoApp.Api.ViewModels;
 using TodoApp.Common.Models.Base;
 using TodoApp.DataAccess.Interface;
 

@@ -35,14 +35,96 @@ namespace TodoApp.DataAccess.Repositories
             return result.Rows.ToList().FirstOrDefault();
         }
 
-        public Result Register(User newUser)
+        public Result Save(User newUser)
         {
             var result = new Result();
             if (GetByMail(newUser.Email) != null)
                 return result.AddError("This email is already being used by another user.");
 
-            result.Data = Create(newUser);
+            Create(newUser);
+            result.Data = newUser;
             return result;
+        }
+
+        //projects
+        public Result SaveProject(Guid userId, Project newProject)
+        {
+            var user = Get(userId);
+            user.Projects.Add(newProject);
+            Update(user);
+            return new Result(newProject);
+        }
+
+        public BaseResult UpdateProject(Guid userId, Project project)
+        {
+            var toReturn = new BaseResult();
+            var user = Get(userId);
+            var index = user.Projects.FindIndex(x=>x.Id.Equals(project.Id));
+            if (index == -1)
+                return toReturn.AddError("Project Not Found!");
+
+            user.Projects[index] = project;
+            Update(user);
+            return toReturn.AddSuccess();
+        }
+
+        public BaseResult DeleteProject(Guid userId, Guid projectId)
+        {
+            var toReturn = new BaseResult();
+            var user = Get(userId);
+            var index = user.Projects.FindIndex(x => x.Id.Equals(projectId));
+            if (index == -1)
+                return toReturn.AddError("Project Not Found!");
+
+            user.Projects.RemoveAt(index);
+            Update(user);
+            return toReturn.AddSuccess();
+        }
+
+        //tasks
+        public Result SaveTask(Guid userId, Guid projectId, ProjectTask newTask)
+        {
+            var user = Get(userId);
+            var project = user.Projects.FirstOrDefault(x => x.Id.Equals(projectId));
+            if (project == null)
+                return new Result().AddError("Project Not Found!");
+            project.Tasks.Add(newTask);
+            Update(user);
+            return new Result(newTask);
+        }
+
+        public BaseResult UpdateTask(Guid userId, Guid projectId, ProjectTask task)
+        {
+            var toReturn = new BaseResult();
+            var user = Get(userId);
+            var project = user.Projects.FirstOrDefault(x => x.Id.Equals(projectId));
+            if (project == null)
+                return toReturn.AddError("Project Not Found!");
+
+            var index = project.Tasks.FindIndex(x => x.Id.Equals(task.Id));
+            if (index == -1)
+                return toReturn.AddError("Task Not Found!");
+
+            project.Tasks[index] = task;
+            Update(user);
+            return toReturn.AddSuccess();
+        }
+
+        public BaseResult DeleteTask(Guid userId, Guid projectId, Guid taskId)
+        {
+            var toReturn = new BaseResult();
+            var user = Get(userId);
+            var project = user.Projects.FirstOrDefault(x => x.Id.Equals(projectId));
+            if (project == null)
+                return toReturn.AddError("Project Not Found!");
+
+            var index = project.Tasks.FindIndex(x => x.Id.Equals(taskId));
+            if (index == -1)
+                return toReturn.AddError("Task Not Found!");
+
+            project.Tasks.RemoveAt(index);
+            Update(user);
+            return toReturn.AddSuccess();
         }
     }
 }
