@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
@@ -90,33 +89,6 @@ namespace TodoApp.Common
             dateRangeEnd = dateRangeEnd ?? DateTime.MinValue;
 
             return (dateToCheck >= dateRangeStart && dateToCheck <= dateRangeEnd);
-        }
-
-        /// <summary>
-        /// returns the description value from the display attribute
-        /// of given enum.
-        /// keywords is comma separated and holds the replacing variable such as @entity.
-        /// keywordValues is comma separated and holds the replacing value such as Username.
-        /// </summary>
-        /// <param name="enumValue"></param>
-        /// <param name="keywords"></param>
-        /// <param name="keywordValues"></param>
-        /// <returns></returns>
-        public static string GetEnumDescription(this Enum enumValue, string keywords = "", string keywordValues = "")
-        {
-            var description = enumValue.GetType().GetMember(enumValue.ToString())
-                .First()
-                ?.GetCustomAttribute<DisplayAttribute>()?.Description;
-            if (string.IsNullOrEmpty(keywords) || string.IsNullOrEmpty(keywordValues) ||
-                string.IsNullOrEmpty(description)) return description ?? "";
-            var keywordsList = keywords.Split(',');
-            var keywordValuesList = keywordValues.Split(',');
-            var index = 0;
-
-            description = keywordsList.Aggregate(description,
-                (current, keyword) => current.Replace(keyword, keywordValuesList[index++]));
-
-            return description ?? "";
         }
 
         public static bool IsNullOrEmpty<TSource>(this IEnumerable<TSource> list)
