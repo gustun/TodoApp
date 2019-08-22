@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TodoApp.Api.ViewModels
 {
-    public class ProjectTaskViewModel
+    public class ProjectTaskCreateViewModel
     {
         [Required]
         public string Name { get; set; }
@@ -14,7 +14,7 @@ namespace TodoApp.Api.ViewModels
         public DateTime? Deadline { get; set; }
     }
 
-    public class ProjectTaskResponse : ProjectTaskViewModel
+    public class ProjectTaskViewModel : ProjectTaskCreateViewModel
     {
         public Guid Id { get; set; }
     }

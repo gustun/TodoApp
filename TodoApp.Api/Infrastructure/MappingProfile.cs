@@ -13,12 +13,12 @@ namespace TodoApp.Api.Infrastructure
             // viewmodel -> entity
             CreateMap<NewUserRequest, User>().ForMember(dest => dest.Password, src => src.MapFrom(x => cryptoHelper.Hash(x.Password)));
             
+            CreateMap<ProjectTaskCreateViewModel, ProjectTask>().ReverseMap();
             CreateMap<ProjectTaskViewModel, ProjectTask>().ReverseMap();
-            CreateMap<ProjectTaskResponse, ProjectTask>().ReverseMap();
 
-            CreateMap<ProjectSimpleViewModel, Project>().ReverseMap();
-            CreateMap<ProjectSimpleResponse, Project>().ReverseMap();
-            CreateMap<ProjectResponse, Project>().ReverseMap();
+            CreateMap<ProjectCreateViewModel, Project>().ReverseMap();
+            CreateMap<ProjectViewModel, Project>().ReverseMap();
+            CreateMap<ProjectAndTasksViewModel, Project>().ReverseMap();
 
             // entity -> viewmodel
             CreateMap<User, UserViewModel>();

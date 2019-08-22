@@ -9,6 +9,6 @@ namespace TodoApp.Api.ViewModels
         public string Email { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public List<ProjectResponse> Projects { get; set; } = new List<ProjectResponse>();
+        public List<ProjectAndTasksViewModel> Projects { get; set; } = new List<ProjectAndTasksViewModel>();
     }
 }

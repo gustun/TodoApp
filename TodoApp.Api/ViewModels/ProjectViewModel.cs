@@ -4,19 +4,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TodoApp.Api.ViewModels
 {
-    public class ProjectSimpleViewModel
+    public class ProjectCreateViewModel
     {
         [Required]
         public string Name { get; set; }
     }
 
-    public class ProjectSimpleResponse : ProjectSimpleViewModel
+    public class ProjectViewModel : ProjectCreateViewModel
     {
         public Guid Id { get; set; }
     }
 
-    public class ProjectResponse : ProjectSimpleResponse
+    public class ProjectAndTasksViewModel : ProjectViewModel
     {
-        public List<ProjectTaskViewModel> Tasks { get; set; } = new List<ProjectTaskViewModel>();
+        public List<ProjectTaskCreateViewModel> Tasks { get; set; } = new List<ProjectTaskCreateViewModel>();
     }
 }

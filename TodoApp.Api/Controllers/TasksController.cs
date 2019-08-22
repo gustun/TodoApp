@@ -9,6 +9,7 @@ using TodoApp.Api.ViewModels;
 using System.Collections.Generic;
 using TodoApp.Api.ViewModels.Requests;
 using TodoApp.Common;
+using TodoApp.Common.Models.Base;
 
 namespace TodoApp.Api.Controllers
 {
@@ -35,15 +36,15 @@ namespace TodoApp.Api.Controllers
             if (project == null)
                 return NotFound("Project not found.");
 
-            var taskList = ApplyFilters(filterOptions, project.Tasks);
-            var response = _mapper.Map<List<ProjectTaskResponse>>(taskList);
+            var response = ApplyFilters(filterOptions, project.Tasks);
             return Ok(response);
         }
 
-        private static IEnumerable<ProjectTask> ApplyFilters(GetTasksRequest filterOptions, IEnumerable<ProjectTask> taskList)
+        private PagedResult<ProjectTaskViewModel> ApplyFilters(GetTasksRequest filterOptions, IEnumerable<ProjectTask> taskList)
         {
+            var pagedResult = new PagedResult<ProjectTaskViewModel>() { CurrentPage = filterOptions.PageIndex, PageSize = filterOptions.PageSize, RowCount = 0 };
             if (taskList.IsNullOrEmpty())
-                return taskList;
+                return pagedResult;
 
             if (filterOptions.IsCompleted.HasValue)
                 taskList = taskList.Where(x => x.IsCompleted == filterOptions.IsCompleted.Value);
@@ -57,25 +58,29 @@ namespace TodoApp.Api.Controllers
             if (filterOptions.DeadlineRange.Max.HasValue)
                 taskList = taskList.Where(x => x.Deadline <= filterOptions.DeadlineRange.Max.Value);
 
-            return taskList
+            pagedResult.RowCount = taskList.Count();
+            pagedResult.PageCount = (int)Math.Ceiling((double)pagedResult.RowCount / pagedResult.PageSize);
+            taskList = taskList
                 .Skip((filterOptions.PageIndex - 1) * filterOptions.PageSize)
-                .Take(filterOptions.PageSize);
+                .Take(filterOptions.PageSize).ToList();
+            pagedResult.Results = _mapper.Map<List<ProjectTaskViewModel>>(taskList);
+            return pagedResult;
         }
 
         [HttpPost]
-        public IActionResult Post(Guid projectId, ProjectTaskViewModel vm)
+        public IActionResult Post(Guid projectId, ProjectTaskCreateViewModel vm)
         {
             var result = _userRepository.SaveTask(GetUserId(), projectId, _mapper.Map<ProjectTask>(vm));
 
             if (!result.IsSuccess)
                 return BadRequest(result);
 
-            result.Data = _mapper.Map<ProjectTaskResponse>(result.Data);
+            result.Data = _mapper.Map<ProjectTaskViewModel>(result.Data);
             return Ok(result);
         }
 
         [HttpPatch("{taskId}")]
-        public IActionResult Patch(Guid projectId, Guid taskId, ProjectTaskViewModel vm)
+        public IActionResult Patch(Guid projectId, Guid taskId, ProjectTaskCreateViewModel vm)
         {
             var task = _mapper.Map<ProjectTask>(vm);
             task.Id = taskId;

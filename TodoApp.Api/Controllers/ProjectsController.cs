@@ -34,24 +34,24 @@ namespace TodoApp.Api.Controllers
             if (!string.IsNullOrEmpty(searchTerm))
                 projects = projects.Where(x => x.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            var response = _mapper.Map<List<ProjectSimpleResponse>>(projects);
+            var response = _mapper.Map<List<ProjectViewModel>>(projects);
             return Ok(response);
         }
 
         [HttpPost]
-        public IActionResult Post(ProjectSimpleViewModel newProject)
+        public IActionResult Post(ProjectCreateViewModel newProject)
         {
             var result = _userRepository.SaveProject(GetUserId(), _mapper.Map<Project>(newProject));
 
             if (!result.IsSuccess)
                 return BadRequest(result);
 
-            result.Data = _mapper.Map<ProjectSimpleResponse>(result.Data);
+            result.Data = _mapper.Map<ProjectViewModel>(result.Data);
             return Ok(result);
         }
 
         [HttpPatch("{projectId}")]
-        public IActionResult Patch(Guid projectId, ProjectSimpleViewModel project)
+        public IActionResult Patch(Guid projectId, ProjectCreateViewModel project)
         {
             var projectEntity = _mapper.Map<Project>(project);
             projectEntity.Id = projectId;
