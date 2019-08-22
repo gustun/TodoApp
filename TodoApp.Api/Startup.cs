@@ -16,6 +16,8 @@ using TodoApp.Common.Interface;
 using TodoApp.DataAccess.Interface;
 using TodoApp.DataAccess.Repositories;
 using Couchbase.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System;
 
 namespace TodoApp.Api
 {
@@ -37,8 +39,15 @@ namespace TodoApp.Api
             services.AddSingleton<ICryptoHelper, CryptoHelper>();
             services.ConfigureJwtAuthentication(Configuration);
             services.ConfigureAutoMapper();
-            services.AddCouchbase(Configuration.GetSection("Couchbase"))
-                .AddCouchbaseBucket<ITodoBucketProvider>("todoApp");
+
+            services.AddCouchbase(client =>
+            {
+                client.Servers = new List<Uri> { new Uri("couchbase://couchbase") };
+                client.UseSsl = false;
+                client.Username = "admin";
+                client.Password = "123qwe"; //todo: use enviroment variables
+            });
+            services.AddCouchbaseBucket<ITodoBucketProvider>("todoApp");
             services.AddScoped<IUserRepository, UserRepository>();
 
 
