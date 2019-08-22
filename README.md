@@ -29,3 +29,10 @@ CREATE INDEX ix_type ON todoApp(type)
   - You can use swagger.ui for all of your requests after you run the application.
   - First, you have to login and get an authenticate token. After that use this token in the Authorize section.
   - Now you can try other endpoints. You can crud users, projects and tasks.
+  - You can use sample requests for user/register and user/login endpoints.
+
+## Todos
+
+ - Unit tests
+ - Automated server configuration
+ - Increase request samples
