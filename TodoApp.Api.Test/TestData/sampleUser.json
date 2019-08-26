@@ -1,0 +1,79 @@
+﻿{
+  "email": "gokcan.ustun@yandex.com",
+  "password": "1",
+  "name": "Gokcan",
+  "surname": "Ustun",
+  "projects": [
+    {
+      "name": "Alışveriş",
+      "tasks": [
+        {
+          "name": "item1",
+          "isCompleted": false,
+          "isImportant": true,
+          "deadline": "2019-09-18T19:34:43+0300"
+        },
+        {
+          "name": "item2",
+          "isCompleted": false,
+          "isImportant": false,
+          "deadline": null
+        },
+        {
+          "name": "item3",
+          "isCompleted": true,
+          "isImportant": true,
+          "deadline": null
+        },
+        {
+          "name": "item4",
+          "isCompleted": false,
+          "isImportant": false,
+          "deadline": null
+        },
+        {
+          "name": "item5",
+          "isCompleted": false,
+          "isImportant": true,
+          "deadline": null
+        },
+        {
+          "name": "item6",
+          "isCompleted": true,
+          "isImportant": false,
+          "deadline": null
+        },
+        {
+          "name": "item7",
+          "isCompleted": false,
+          "isImportant": true,
+          "deadline": null
+        },
+        {
+          "name": "item8",
+          "isCompleted": true,
+          "isImportant": false,
+          "deadline": null
+        },
+        {
+          "name": "item9",
+          "isCompleted": false,
+          "isImportant": false,
+          "deadline": null
+        },
+        {
+          "name": "item10",
+          "isCompleted": false,
+          "isImportant": true,
+          "deadline": null
+        },
+        {
+          "name": "item11",
+          "isCompleted": true,
+          "isImportant": false,
+          "deadline": null
+        }
+      ]
+    }
+  ]
+}

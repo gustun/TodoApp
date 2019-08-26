@@ -11,12 +11,12 @@ namespace TodoApp.DataAccess.Entities.Base
     {
         protected readonly IBucket _bucket;
 
-        public CouchbaseRepository(ITodoBucketProvider bucketProvider)
+        protected CouchbaseRepository(ITodoBucketProvider bucketProvider)
         {
             _bucket = bucketProvider.GetBucket();
         }
 
-        public T Get(Guid id)
+        protected T Get(Guid id)
         {
             var result = _bucket.Get<T>(CreateKey(id));
             if (!result.Success)
@@ -25,7 +25,7 @@ namespace TodoApp.DataAccess.Entities.Base
             return result.Value;
         }
 
-        public IEnumerable<T> GetAll(int limit = 10)
+        protected IEnumerable<T> GetAll(int limit = 10)
         {
             var query = new QueryRequest(
                 $@"SELECT t.* 
@@ -40,7 +40,7 @@ namespace TodoApp.DataAccess.Entities.Base
             return result.Rows;
         }
 
-        public T Create(T item)
+        protected T Create(T item)
         {
             var result = _bucket.Insert(CreateKey(item.Id), item);
             if (!result.Success)
@@ -49,7 +49,7 @@ namespace TodoApp.DataAccess.Entities.Base
             return result.Value;
         }
 
-        public T Update(T item)
+        protected T Update(T item)
         {
             var result = _bucket.Replace(CreateKey(item.Id), item);
             if (!result.Success)
@@ -58,14 +58,14 @@ namespace TodoApp.DataAccess.Entities.Base
             return result.Value;
         }
 
-        public void Delete(Guid id)
+        protected void Delete(Guid id)
         {
             var result = _bucket.Remove(CreateKey(id));
             if (!result.Success)
                 throw result.Exception;
         }
 
-        public string CreateKey(Guid id) => $"{Type}::{id}";
-        public string Type => typeof(T).Name.ToLower();
+        protected string CreateKey(Guid id) => $"{Type}::{id}";
+        protected string Type => typeof(T).Name.ToLower();
     }
 }
