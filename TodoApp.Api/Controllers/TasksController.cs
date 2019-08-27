@@ -79,8 +79,8 @@ namespace TodoApp.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("{taskId}")]
-        public IActionResult Patch(Guid projectId, Guid taskId, ProjectTaskCreateViewModel vm)
+        [HttpPut("{taskId}")]
+        public IActionResult Put(Guid projectId, Guid taskId, ProjectTaskCreateViewModel vm)
         {
             var task = _mapper.Map<ProjectTask>(vm);
             task.Id = taskId;

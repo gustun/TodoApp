@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TodoApp.Api.Infrastructure;
 using TodoApp.Api.ViewModels;
+using TodoApp.Common.Models.Base;
 using TodoApp.DataAccess.Entities;
 using TodoApp.DataAccess.Interface;
 
@@ -20,6 +21,22 @@ namespace TodoApp.Api.Controllers
         {
             _userRepository = userRepository;
             _mapper = mapper;
+        }
+
+        [HttpGet("{projectId}")]
+        public IActionResult Get(Guid projectId)
+        {
+            var toReturn = new Result();
+            var user = _userRepository.GetById(GetUserId());
+            if (user == null)
+                return NotFound(toReturn.AddError("User not found."));
+
+            var project = user.Projects.FirstOrDefault(x => x.Id == projectId);
+            if (project == null)
+                return NotFound(toReturn.AddError("Project not found."));
+
+            toReturn.Data = _mapper.Map<ProjectAndTasksViewModel>(project);
+            return Ok(toReturn);
         }
 
         [HttpGet]
@@ -50,8 +67,8 @@ namespace TodoApp.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("{projectId}")]
-        public IActionResult Patch(Guid projectId, ProjectCreateViewModel project)
+        [HttpPut("{projectId}")]
+        public IActionResult Put(Guid projectId, ProjectCreateViewModel project)
         {
             var projectEntity = _mapper.Map<Project>(project);
             projectEntity.Id = projectId;

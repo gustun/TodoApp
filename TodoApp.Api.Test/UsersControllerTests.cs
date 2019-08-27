@@ -1,13 +1,9 @@
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using System.IO;
 using System.Text;
 using TodoApp.Api.Controllers;
-using TodoApp.Api.Infrastructure;
 using TodoApp.Api.Infrastructure.Options;
 using TodoApp.Api.ViewModels.Requests;
 using TodoApp.Common;
@@ -17,28 +13,19 @@ using Microsoft.AspNetCore.Mvc;
 using TodoApp.DataAccess.Interface;
 using Moq;
 using System.Net;
-using TodoApp.Api.ViewModels;
+using TodoApp.Api.Test.Base;
 
 namespace Tests
 {
-    public class UserControllerTests
+    public class UsersControllerTests : BaseTest
     {
-        public string TestDataDirectory { get; private set; }
-        public UsersController _userController { get; private set; }
+        private UsersController _userController { get; set; }
         private const string Secretkey = "SECRETKEYGREATERTHAN128BITS";
 
         [SetUp]
-        public void Setup()
+        public override void Setup()
         {
-            TestDataDirectory = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory))), "TestData");
-            var sampleUserData = JsonConvert.DeserializeObject<User>(File.ReadAllText(Path.Combine(TestDataDirectory, "sampleUser.json")));
-            var cyrptoHelper = new CryptoHelper();
-            sampleUserData.Password = cyrptoHelper.Hash(sampleUserData.Password);
-
-            var mapper = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile(cyrptoHelper));
-            }).CreateMapper();
+            base.Setup();
 
             var jwtOptions = Options.Create(new JwtIssuerOptions()
             {
@@ -47,12 +34,12 @@ namespace Tests
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secretkey)), SecurityAlgorithms.HmacSha256),
             });
 
-            var mock = new Mock<IUserRepository>();
-            mock.Setup(x => x.GetByMail(sampleUserData.Email)).Returns(sampleUserData);
-            mock.Setup(x => x.Save(It.Is<User>(y => y.Email != "gokcan.ustun@yandex.com"))).Returns(new Result());
-            mock.Setup(x => x.Save(It.Is<User>(y => y.Email == "gokcan.ustun@yandex.com"))).Returns(new Result().AddError("This email is already being used by another user."));
+            var userRepositoryMock = new Mock<IUserRepository>();
+            userRepositoryMock.Setup(x => x.GetByMail(_sampleUser.Email)).Returns(_sampleUser);
+            userRepositoryMock.Setup(x => x.Save(It.Is<User>(y => y.Email != "gokcan.ustun@yandex.com"))).Returns(new Result());
+            userRepositoryMock.Setup(x => x.Save(It.Is<User>(y => y.Email == "gokcan.ustun@yandex.com"))).Returns(new Result().AddError("This email is already being used by another user."));
 
-            _userController = new UsersController(mock.Object, cyrptoHelper, mapper, jwtOptions);
+            _userController = new UsersController(userRepositoryMock.Object, _cyrptoHelper, _mapper, jwtOptions);
         }
 
         [Test]
