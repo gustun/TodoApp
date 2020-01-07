@@ -2,13 +2,17 @@ version: '3.4'
 
 services:
   couchbase:
-    image: couchbase
+    image: couchbase:latest
     container_name: couchbase
     ports:
       - "8091:8091"
 
   todoapp.api:
     image: ${DOCKER_REGISTRY-}todoappapi
+    container_name: todo-app-api
+    restart: always
+    ports:
+      - "7992:80"
     build:
       context: .
       dockerfile: TodoApp.Api/Dockerfile
