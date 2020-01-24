@@ -62,7 +62,11 @@ namespace TodoApp.Api.Infrastructure.Middleware
                 ErrorTraceId = errorGuid.ToString(),
                 Messages = new List<Notification>
                 {
-                    new Notification {Message = "Unexpected error occurred.", NotificationType = ENotificationType.Error}
+                    new Notification
+                    {
+                        Message = "Unexpected error occurred.", 
+                        NotificationType = ENotificationType.Error
+                    }
                 }
             };
 

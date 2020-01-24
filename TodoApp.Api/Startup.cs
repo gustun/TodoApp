@@ -18,6 +18,7 @@ using TodoApp.DataAccess.Repositories;
 using Couchbase.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace TodoApp.Api
 {
@@ -81,7 +82,14 @@ namespace TodoApp.Api
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
-                app.UseExceptionHandler();
+                app.UseStatusCodePages(async context =>
+                {
+                    context.HttpContext.Response.ContentType = "text/plain";
+
+                    await context.HttpContext.Response.WriteAsync(
+                        "Status code page, status code: " + 
+                        context.HttpContext.Response.StatusCode);
+                });
 
             app.UseCors("CorsPolicy");
             app.UseForwardedHeaders(new ForwardedHeadersOptions

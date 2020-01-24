@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TodoApp.Api</name>
+    </assembly>
+    <members>
+        <member name="M:TodoApp.Api.Controllers.UsersController.Login(TodoApp.Api.ViewModels.Requests.LoginRequest)">
+            <summary>
+            Generates an authentication token
+            </summary>
+            <param name="loginRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TodoApp.Api.Controllers.UsersController.Register(TodoApp.Api.ViewModels.Requests.NewUserRequest)">
+            <summary>
+            Sign up a new user
+            </summary>
+            <param name="newUser"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
