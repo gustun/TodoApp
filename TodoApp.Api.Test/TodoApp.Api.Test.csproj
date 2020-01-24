@@ -1,28 +1,29 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+        <IsPackable>false</IsPackable>
 
-  <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.8.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
-    <PackageReference Include="Moq" Version="4.12.0" />
-    <PackageReference Include="nunit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+        <RootNamespace>TodoApp.Api.Test</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TodoApp.Api\TodoApp.Api.csproj" />
-    <ProjectReference Include="..\TodoApp.Common\TodoApp.Common.csproj" />
-    <ProjectReference Include="..\TodoApp.DataAccess\TodoApp.DataAccess.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="5.10.0" />
+        <PackageReference Include="Moq" Version="4.12.0" />
+        <PackageReference Include="nunit" Version="3.12.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.App">
+          <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+          <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TodoApp.Api\TodoApp.Api.csproj" />
+      <ProjectReference Include="..\TodoApp.Common\TodoApp.Common.csproj" />
+      <ProjectReference Include="..\TodoApp.DataAccess\TodoApp.DataAccess.csproj" />
+    </ItemGroup>
 
 </Project>

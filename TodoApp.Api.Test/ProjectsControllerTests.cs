@@ -1,21 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using NUnit.Framework;
 using TodoApp.Api.Controllers;
-using TodoApp.Common;
-using Microsoft.AspNetCore.Mvc;
-using TodoApp.DataAccess.Interface;
-using Moq;
-using System.Net;
 using TodoApp.Api.Test.Base;
-using System.Collections.Generic;
 using TodoApp.Api.ViewModels;
-using System;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
-using TodoApp.DataAccess.Entities;
+using TodoApp.Common;
 using TodoApp.Common.Models.Base;
+using TodoApp.DataAccess.Entities;
+using TodoApp.DataAccess.Interface;
 
-namespace Tests
+namespace TodoApp.Api.Test
 {
     public class ProjectsControllerTests : BaseTest
     {
@@ -65,8 +65,8 @@ namespace Tests
         }
 
         [Test]
-        [TestCase("Alýþveriþ", 1)]
-        [TestCase("Ödevler", 0)]
+        [TestCase("AlÄ±ÅŸveriÅŸ", 1)]
+        [TestCase("Ã–devler", 0)]
         public void Test_GetAll(string keyword, int count)
         {
             var response = _projectsController.GetAll(keyword) as ObjectResult;
@@ -78,7 +78,7 @@ namespace Tests
         }
 
         [Test]
-        [TestCase("Ödevler")]
+        [TestCase("Ã–devler")]
         public void Test_Post(string projectName)
         {
             var projectVm = new ProjectCreateViewModel { Name = projectName };
@@ -95,7 +95,7 @@ namespace Tests
         [TestCase(HttpStatusCode.BadRequest)]
         public void Test_Put(HttpStatusCode statusCode)
         {
-            var newProjectName = "Ödevler";
+            var newProjectName = "Ã–devler";
             var project = new ProjectCreateViewModel { Name = newProjectName };
             var projectId = statusCode == HttpStatusCode.OK ? _sampleUser.Projects.FirstOrDefault().Id : Guid.NewGuid();
 

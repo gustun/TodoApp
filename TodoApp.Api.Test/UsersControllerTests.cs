@@ -1,21 +1,21 @@
+using System.Net;
+using System.Text;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Moq;
 using NUnit.Framework;
-using System.Text;
 using TodoApp.Api.Controllers;
 using TodoApp.Api.Infrastructure.Options;
+using TodoApp.Api.Test.Base;
 using TodoApp.Api.ViewModels.Requests;
 using TodoApp.Common;
 using TodoApp.Common.Models.Base;
 using TodoApp.DataAccess.Entities;
-using Microsoft.AspNetCore.Mvc;
 using TodoApp.DataAccess.Interface;
-using Moq;
-using System.Net;
-using TodoApp.Api.Test.Base;
 
-namespace Tests
+namespace TodoApp.Api.Test
 {
     public class UsersControllerTests : BaseTest
     {

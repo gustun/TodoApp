@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using Couchbase;
-using Couchbase.Authentication;
-using Couchbase.Configuration.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

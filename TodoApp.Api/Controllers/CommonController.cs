@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using TodoApp.Api.Infrastructure;
@@ -14,17 +15,24 @@ namespace TodoApp.Api.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public CommonController(IUserRepository userRepository, IMapper mapper)
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public CommonController( IMapper mapper, IHostingEnvironment hostingEnvironment)
         {
-            _userRepository = userRepository;
+            //_userRepository = userRepository;
             _mapper = mapper;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [AllowAnonymous, HttpGet, Route("~/v1/health-check")]
         public ActionResult Get()
         {
             Log.Information("Logger test...");
-            return Ok();
+            return Ok(new Result( new
+            {
+                _hostingEnvironment.ApplicationName, 
+                _hostingEnvironment.EnvironmentName
+            }));
         }
 
         [HttpGet, Route("~/v1/me")]
