@@ -12,12 +12,12 @@ services:
     container_name: todo-app-api
     restart: always
     ports:
-      - "7002:7002"
+      - 7002:80
     environment:
       ASPNETCORE_ENVIRONMENT: "Asd"
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: TodoApp.Api/Dockerfile
     links:
       - couchbase
     depends_on:
